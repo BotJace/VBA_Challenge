@@ -1,0 +1,14 @@
+There are multiple of the same ticker, need to add the total number of vol from all of the same ticker. Multiple dynamic variables need to be updated. 
+Total volume:
+- can just be added on top of each other
+Percent change
+- store the lowest date and compare it to the highest date (Year)
+- compare the change
+
+Logic of the loops
+1. The loop iterates through each row
+2. For each row, it checks if the ticker symbol changes in the next row. If it does, it means we have reached the end of data for the current ticker, and we need to calculate and output the analysis results for that ticker.
+3. Before calculating the yearly change and percent change, it checks if it has both the open price (from the current row) and the close price (from the next row).
+4. If the ticker changes in the next row, it assumes that the close price for the current ticker is the close price in the current row 
+5. After calculating the yearly change and percent change, it outputs the analysis results for the current ticker.
+6. The loop then continues to the next row.
