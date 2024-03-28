@@ -1,0 +1,236 @@
+Attribute VB_Name = "Module1"
+Sub StockAnalysis()
+Attribute StockAnalysis.VB_ProcData.VB_Invoke_Func = " \n14"
+
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim ticker As String
+    Dim openPrice As Double
+    Dim closePrice As Double
+    Dim yearlyChange As Double
+    Dim percentChange As Double
+    Dim totalVolume As Double
+    Dim outputRow As Long
+    Dim changeCell As Range
+    Dim greatestIncrease As Double
+    Dim greatestDecrease As Double
+    Dim greatestVolume As Double
+    Dim tickerIncrease As String
+    Dim tickerDecrease As String
+    Dim tickerVolume As String
+    
+    
+    Set ws = ThisWorkbook.Worksheets("2018")
+    
+    ' Find the last row in column A
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+    
+    ' Initialize output row
+    outputRow = 2
+    
+    ' Initialize variables for greatest increase, decrease, and volume
+    greatestIncrease = 0
+    greatestDecrease = 0
+    greatestVolume = 0
+    tickerIncrease = ""
+    tickerDecrease = ""
+    tickerVolume = ""
+    
+    ' Output headers
+    ws.Cells(1, 9).Value = "Ticker"
+    ws.Cells(1, 10).Value = "Yearly Change"
+    ws.Cells(1, 11).Value = "Percent Change"
+    ws.Cells(1, 12).Value = "Total Volume"
+    ws.Cells(1, 16).Value = "Ticker"
+    ws.Cells(1, 17).Value = "Value"
+    
+    ' Loop through each row to analyze each stock
+    For i = 2 To lastRow
+        ' Get current ticker symbol
+        ticker = ws.Cells(i, 1).Value
+        
+        ' Get open price for the current ticker
+        If ws.Cells(i - 1, 1).Value <> ticker Then
+            openPrice = ws.Cells(i, 3).Value
+            totalVolume = 0 ' Reset total volume for new ticker
+        End If
+        
+        ' Accumulate total volume for the current ticker
+        totalVolume = totalVolume + ws.Cells(i, 7).Value
+        
+        ' Get close price for the current ticker
+        If ws.Cells(i + 1, 1).Value <> ticker Then
+            closePrice = ws.Cells(i, 6).Value
+            
+            ' Calculate yearly change and percent change
+            yearlyChange = closePrice - openPrice
+            If openPrice <> 0 Then
+                percentChange = (yearlyChange / openPrice) * 100
+            Else
+                percentChange = 0
+            End If
+            
+            ' Output data for the current ticker
+            ws.Cells(outputRow, 9).Value = ticker
+            ws.Cells(outputRow, 10).Value = yearlyChange
+            ws.Cells(outputRow, 11).Value = Format(percentChange, "0.00") & "%"
+            ws.Cells(outputRow, 12).Value = totalVolume
+            
+            ' Set color for the cell in "Yearly Change" column
+            Set changeCell = ws.Cells(outputRow, 10)
+            If yearlyChange >= 0 Then
+                changeCell.Interior.Color = RGB(0, 255, 0) ' Green for positive change
+            Else
+                changeCell.Interior.Color = RGB(255, 0, 0) ' Red for negative change
+            End If
+            
+            ' Check for greatest increase, decrease, and volume
+            If percentChange > greatestIncrease Then
+                greatestIncrease = percentChange
+                tickerIncrease = ticker
+            End If
+            If percentChange < greatestDecrease Then
+                greatestDecrease = percentChange
+                tickerDecrease = ticker
+            End If
+            If totalVolume > greatestVolume Then
+                greatestVolume = totalVolume
+                tickerVolume = ticker
+            End If
+            
+            outputRow = outputRow + 1
+        End If
+    Next i
+    
+    ' Output greatest increase, decrease, and volume
+    ws.Cells(2, 15).Value = "Greatest % Increase"
+    ws.Cells(2, 16).Value = tickerIncrease
+    ws.Cells(2, 17).Value = Format(greatestIncrease, "0.00") & "%"
+    
+    ws.Cells(3, 15).Value = "Greatest % Decrease"
+    ws.Cells(3, 16).Value = tickerDecrease
+    ws.Cells(3, 17).Value = Format(greatestDecrease, "0.00") & "%"
+    
+    ws.Cells(4, 15).Value = "Greatest Total Volume"
+    ws.Cells(4, 16).Value = tickerVolume
+    ws.Cells(4, 17).Value = greatestVolume
+    
+End Sub
+Sub MultiSheetStockAnalysis()
+Attribute MultiSheetStockAnalysis.VB_ProcData.VB_Invoke_Func = " \n14"
+Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim ticker As String
+    Dim openPrice As Double
+    Dim closePrice As Double
+    Dim yearlyChange As Double
+    Dim percentChange As Double
+    Dim totalVolume As Double
+    Dim outputRow As Long
+    Dim changeCell As Range
+    Dim greatestIncrease As Double
+    Dim greatestDecrease As Double
+    Dim greatestVolume As Double
+    Dim tickerIncrease As String
+    Dim tickerDecrease As String
+    Dim tickerVolume As String
+    
+    ' Loop through each worksheet
+    For Each ws In ThisWorkbook.Worksheets
+        ' Find the last row in column A
+        lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+        
+        ' Initialize output row
+        outputRow = 2
+        
+        ' Initialize variables for greatest increase, decrease, and volume
+        greatestIncrease = 0
+        greatestDecrease = 0
+        greatestVolume = 0
+        tickerIncrease = ""
+        tickerDecrease = ""
+        tickerVolume = ""
+        
+        ' Output headers
+        ws.Cells(1, 9).Value = "Ticker"
+        ws.Cells(1, 10).Value = "Yearly Change"
+        ws.Cells(1, 11).Value = "Percent Change"
+        ws.Cells(1, 12).Value = "Total Volume"
+        ws.Cells(1, 16).Value = "Ticker"
+        ws.Cells(1, 17).Value = "Value"
+        
+        ' Loop through each row to analyze each stock
+        For i = 2 To lastRow
+            ' Get current ticker symbol
+            ticker = ws.Cells(i, 1).Value
+            
+            ' Get open price for the current ticker
+            If ws.Cells(i - 1, 1).Value <> ticker Then
+                openPrice = ws.Cells(i, 3).Value
+                totalVolume = 0 ' Reset total volume for new ticker
+            End If
+            
+            ' Accumulate total volume for the current ticker
+            totalVolume = totalVolume + ws.Cells(i, 7).Value
+            
+            ' Get close price for the current ticker
+            If ws.Cells(i + 1, 1).Value <> ticker Then
+                closePrice = ws.Cells(i, 6).Value
+                
+                ' Calculate yearly change and percent change
+                yearlyChange = closePrice - openPrice
+                If openPrice <> 0 Then
+                    percentChange = (yearlyChange / openPrice) * 100
+                Else
+                    percentChange = 0
+                End If
+                
+                ' Output data for the current ticker
+                ws.Cells(outputRow, 9).Value = ticker
+                ws.Cells(outputRow, 10).Value = yearlyChange
+                ws.Cells(outputRow, 11).Value = Format(percentChange, "0.00") & "%"
+                ws.Cells(outputRow, 12).Value = totalVolume
+                
+                ' Set color for the cell in "Yearly Change" column
+                Set changeCell = ws.Cells(outputRow, 10)
+                If yearlyChange >= 0 Then
+                    changeCell.Interior.Color = RGB(0, 255, 0) ' Green for positive change
+                Else
+                    changeCell.Interior.Color = RGB(255, 0, 0) ' Red for negative change
+                End If
+                
+                ' Check for greatest increase, decrease, and volume
+                If percentChange > greatestIncrease Then
+                    greatestIncrease = percentChange
+                    tickerIncrease = ticker
+                End If
+                If percentChange < greatestDecrease Then
+                    greatestDecrease = percentChange
+                    tickerDecrease = ticker
+                End If
+                If totalVolume > greatestVolume Then
+                    greatestVolume = totalVolume
+                    tickerVolume = ticker
+                End If
+                
+                outputRow = outputRow + 1
+            End If
+        Next i
+        
+        ' Output greatest increase, decrease, and volume
+        ws.Cells(2, 15).Value = "Greatest % Increase"
+        ws.Cells(2, 16).Value = tickerIncrease
+        ws.Cells(2, 17).Value = Format(greatestIncrease, "0.00") & "%"
+        
+        ws.Cells(3, 15).Value = "Greatest % Decrease"
+        ws.Cells(3, 16).Value = tickerDecrease
+        ws.Cells(3, 17).Value = Format(greatestDecrease, "0.00") & "%"
+        
+        ws.Cells(4, 15).Value = "Greatest Total Volume"
+        ws.Cells(4, 16).Value = tickerVolume
+        ws.Cells(4, 17).Value = greatestVolume
+    Next ws
+
+
+End Sub
+
